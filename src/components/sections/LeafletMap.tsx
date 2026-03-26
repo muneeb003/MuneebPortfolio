@@ -41,5 +41,5 @@ export default function MapboxMap({ lat, lng }: MapboxMapProps) {
     return () => map.remove();
   }, [lat, lng]);
 
-  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={mapRef} style={{ width: "100%", height: "100%", position: "relative" }} />;
 }
