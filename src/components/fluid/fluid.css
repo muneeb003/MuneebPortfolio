@@ -1,0 +1,22 @@
+.intro {
+  font-size: 2rem;
+  font-family: Montserrat, sans-serif;
+  font-weight: 500;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: fit-content;
+  color: black;
+  z-index: 100;
+}
+
+canvas {
+  width: 99vw;
+  height: 200vh;
+  top: 0;
+  left: 0;
+
+  position: absolute;
+  /* background-color: blue; */
+  z-index: -100;
+}
