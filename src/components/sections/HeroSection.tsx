@@ -97,11 +97,6 @@ function AvatarLens({ src }: { src: string }) {
   const shadowBlur = useTransform(sProx, [0, 1],  [60,   90]);
   const boxShadow  = useMotionTemplate`${shadowX}px ${shadowY}px ${shadowBlur}px rgba(0,0,0,0.28), 0 0 80px rgba(99,102,241,0.10)`;
 
-  // Specular sheen moves to the lit face
-  const shineX = useTransform(sMX, [-1, 1], [82, 18]);
-  const shineY = useTransform(sMY, [-1, 1], [82, 18]);
-  const sheen  = useMotionTemplate`radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.06) 0%, transparent 60%)`;
-
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       const el = ref.current;
@@ -130,19 +125,13 @@ function AvatarLens({ src }: { src: string }) {
   }, [mX, mY, prox]);
 
   return (
-    <div style={{ perspective: "1100px" }} className="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto">
+    <div style={{ perspective: "1100px" }} className="relative w-52 h-52 sm:w-60 sm:h-60 mx-auto">
       <motion.div
         ref={ref}
         style={{ rotateX, rotateY, scale, transformStyle: "preserve-3d", boxShadow }}
         className="relative w-full h-full rounded-3xl overflow-hidden"
       >
-        <Image src={src} alt="Avatar" fill sizes="240px" className="object-cover" priority />
-
-        {/* Specular light layer */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: sheen }}
-        />
+        <Image src={src} alt="Avatar" fill sizes="300px" className="object-cover" priority />
       </motion.div>
     </div>
   );

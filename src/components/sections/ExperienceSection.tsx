@@ -8,12 +8,13 @@ import { FadeUp, SplitHeading } from "@/components/ui/Animate";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const ACCENTS = [
-  { dot: "#6366f1", badge: "bg-indigo-500/10 text-indigo-300 border-indigo-500/25",  company: "hover:text-indigo-400"  },
-  { dot: "#a855f7", badge: "bg-purple-500/10 text-purple-300 border-purple-500/25",  company: "hover:text-purple-400"  },
-  { dot: "#10b981", badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/25", company: "hover:text-emerald-400" },
-  { dot: "#f59e0b", badge: "bg-amber-500/10 text-amber-300 border-amber-500/25",    company: "hover:text-amber-400"   },
-  { dot: "#ec4899", badge: "bg-pink-500/10 text-pink-300 border-pink-500/25",       company: "hover:text-pink-400"    },
+  { color: "#6366f1", from: "#6366f1", to: "#8b5cf6", badge: "bg-indigo-500/10 text-indigo-300 border-indigo-500/20",  company: "hover:text-indigo-300"  },
+  { color: "#a855f7", from: "#a855f7", to: "#ec4899", badge: "bg-purple-500/10 text-purple-300 border-purple-500/20",  company: "hover:text-purple-300"  },
+  { color: "#10b981", from: "#10b981", to: "#06b6d4", badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20", company: "hover:text-emerald-300" },
+  { color: "#f59e0b", from: "#f59e0b", to: "#ef4444", badge: "bg-amber-500/10 text-amber-300 border-amber-500/20",    company: "hover:text-amber-300"   },
+  { color: "#ec4899", from: "#ec4899", to: "#a855f7", badge: "bg-pink-500/10 text-pink-300 border-pink-500/20",       company: "hover:text-pink-300"    },
 ] as const;
+
 
 function getDuration(start: string, end: string | null): string {
   const s = new Date(start);
@@ -40,20 +41,22 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
         <SplitHeading className="text-3xl font-bold text-zinc-100">
           Experience
         </SplitHeading>
-        <span className="text-sm text-zinc-600 font-mono mb-0.5 tabular-nums">
+        <span className="text-sm text-zinc-600 font-mono mb-0.5">
           {experience.length} role{experience.length !== 1 ? "s" : ""}
         </span>
       </FadeUp>
 
-      {/* Timeline */}
+      {/* Timeline wrapper */}
       <div className="relative">
-        {/* Vertical track */}
+
+        {/* Gradient track line */}
         <div
-          className="absolute top-0 bottom-0 w-px"
+          className="absolute top-6 bottom-6 w-0.5 rounded-full"
           style={{
-            left: "22px",
+            left: "21px",
             background:
-              "linear-gradient(to bottom, transparent, #3f3f46 8%, #3f3f46 92%, transparent)",
+              "linear-gradient(to bottom, #6366f1, #a855f7 40%, #10b981 75%, #f59e0b)",
+            opacity: 0.35,
           }}
         />
 
@@ -63,103 +66,126 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
             const isCurrent = !exp.end_date;
 
             return (
-              <motion.div
+              <div
                 key={exp.id}
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false, margin: "-60px" }}
-                transition={{ duration: 0.55, delay: i * 0.08, ease: EASE }}
-                className="flex gap-6 items-start"
+                className="flex items-start gap-5"
               >
-                {/* ── Dot column ── */}
-                <div className="relative z-10 shrink-0 w-11 flex justify-center mt-5">
-                  {/* Ping ring — current only */}
+                {/* ── Stamp dot ── */}
+                <div className="relative z-10 shrink-0 flex flex-col items-center" style={{ width: "44px" }}>
+
+                  {/* Pulse ring — current only */}
                   {isCurrent && (
                     <span
-                      className="absolute w-7 h-7 rounded-full animate-ping opacity-30"
-                      style={{ background: accent.dot }}
+                      className="absolute top-0 left-0 w-11 h-11 rounded-full animate-ping"
+                      style={{ background: accent.color, opacity: 0.18 }}
                     />
                   )}
-                  {/* Outer halo */}
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
+
+                  {/* Numbered circle */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -90 }}
+                    whileInView={{ scale: 1, rotate: 0 }}
                     viewport={{ once: false }}
-                    transition={{ type: "spring", stiffness: 320, damping: 18, delay: i * 0.1 }}
-                    className="relative w-5 h-5 rounded-full border-4 border-zinc-950 flex items-center justify-center"
-                    style={{ background: accent.dot, boxShadow: `0 0 12px ${accent.dot}60` }}
-                  />
+                    transition={{
+                      type: "spring",
+                      stiffness: 220,
+                      damping: 16,
+                      delay: i * 0.1,
+                    }}
+                    className="w-11 h-11 rounded-full flex items-center justify-center font-black text-sm tabular-nums select-none"
+                    style={{
+                      background: `${accent.color}18`,
+                      border: `2px solid ${accent.color}`,
+                      color: accent.color,
+                      boxShadow: `0 0 18px ${accent.color}35`,
+                    }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </motion.div>
                 </div>
 
                 {/* ── Card ── */}
-                <div className="flex-1 pb-2">
-                  <motion.div
-                    whileHover={{ y: -3, x: 3 }}
-                    transition={{ type: "spring", stiffness: 280, damping: 20 }}
-                    className="relative overflow-hidden rounded-2xl bg-zinc-900/70 border border-zinc-800 hover:border-zinc-700 transition-colors pl-5 pr-6 py-5"
-                    style={{ borderLeft: `3px solid ${accent.dot}` }}
-                  >
-                    {/* Ordinal watermark */}
-                    <div
-                      className="absolute -right-3 -top-1 text-[88px] font-black leading-none pointer-events-none select-none tabular-nums"
-                      style={{ color: accent.dot, opacity: 0.07 }}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: "-40px" }}
+                  transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
+                  whileHover={{ y: -5 }}
+                  className="flex-1 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl shadow-black/20"
+                >
+                  {/* Colored top bar */}
+                  <div
+                    className="h-1 w-full"
+                    style={{
+                      background: `linear-gradient(to right, ${accent.from}, ${accent.to})`,
+                    }}
+                  />
 
-                    {/* Content */}
-                    <div className="relative z-10">
-                      {/* Meta row: date + duration + now badge */}
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <div className="p-5">
+                    {/* Role + "Now" badge */}
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                          <h3 className="text-lg font-bold text-zinc-100 leading-snug">
+                            {exp.role}
+                          </h3>
+                          {isCurrent && (
+                            <span
+                              className="flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full border"
+                              style={{
+                                color: accent.color,
+                                background: `${accent.color}15`,
+                                borderColor: `${accent.color}40`,
+                              }}
+                            >
+                              <span
+                                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                                style={{ background: accent.color }}
+                              />
+                              Now
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Company */}
+                        <p className="text-sm text-zinc-500">
+                          {exp.company_url ? (
+                            <a
+                              href={exp.company_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`transition-colors ${accent.company}`}
+                            >
+                              {exp.company} ↗
+                            </a>
+                          ) : (
+                            exp.company
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Date + duration */}
+                      <div className="flex items-center gap-2 shrink-0">
                         <span
                           className={`text-xs font-mono px-2.5 py-1 rounded-full border ${accent.badge}`}
                         >
                           {formatDateRange(exp.start_date, exp.end_date)}
                         </span>
-
-                        <span className="text-[11px] text-zinc-600 font-mono">
+                        <span className="hidden sm:block text-[11px] text-zinc-600 font-mono">
                           · {getDuration(exp.start_date, exp.end_date)}
                         </span>
-
-                        {isCurrent && (
-                          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                            Now
-                          </span>
-                        )}
                       </div>
-
-                      {/* Role */}
-                      <h3 className="text-lg font-bold text-zinc-100 leading-snug">
-                        {exp.role}
-                      </h3>
-
-                      {/* Company */}
-                      <p className="text-sm text-zinc-500 mt-0.5">
-                        {exp.company_url ? (
-                          <a
-                            href={exp.company_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`transition-colors ${accent.company}`}
-                          >
-                            {exp.company} ↗
-                          </a>
-                        ) : (
-                          exp.company
-                        )}
-                      </p>
-
-                      {/* Description */}
-                      {exp.description && (
-                        <p className="text-sm text-zinc-400 mt-3 leading-relaxed">
-                          {exp.description}
-                        </p>
-                      )}
                     </div>
-                  </motion.div>
-                </div>
-              </motion.div>
+
+                    {/* Description */}
+                    {exp.description && (
+                      <p className="text-sm text-zinc-400 leading-relaxed border-t border-zinc-800 pt-3">
+                        {exp.description}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              </div>
             );
           })}
         </div>

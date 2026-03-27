@@ -62,6 +62,22 @@ export function SkillsManager({ initialCategories }: Props) {
     );
   }
 
+  async function updateSkill(categoryId: string, skillId: string, patch: Partial<Skill>) {
+    const res = await fetch(`/api/skills/${skillId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    const updated = await res.json();
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId
+          ? { ...c, skills: c.skills.map((s) => (s.id === skillId ? { ...s, ...updated } : s)) }
+          : c
+      )
+    );
+  }
+
   async function handleDragEnd(event: DragEndEvent, categoryId: string) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -102,6 +118,7 @@ export function SkillsManager({ initialCategories }: Props) {
                     key={skill.id}
                     skill={skill}
                     onDelete={() => deleteSkill(cat.id, skill.id)}
+                    onUpdate={(patch) => updateSkill(cat.id, skill.id, patch)}
                   />
                 ))}
               </div>
@@ -162,14 +179,74 @@ export function SkillsManager({ initialCategories }: Props) {
   );
 }
 
-function SortableSkillRow({ skill, onDelete }: { skill: Skill; onDelete: () => void }) {
+function SortableSkillRow({
+  skill,
+  onDelete,
+  onUpdate,
+}: {
+  skill: Skill;
+  onDelete: () => void;
+  onUpdate: (patch: Partial<Skill>) => Promise<void>;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: skill.id });
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState({ name: skill.name, icon_slug: skill.icon_slug ?? "", color: skill.color ?? "", proficiency: skill.proficiency });
+  const [saving, setSaving] = useState(false);
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+  async function save() {
+    setSaving(true);
+    await onUpdate(draft);
+    setSaving(false);
+    setEditing(false);
+  }
+
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+
+  if (editing) {
+    return (
+      <div ref={setNodeRef} style={style} className="rounded-lg border border-indigo-500/40 bg-zinc-950 px-3 py-3 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            placeholder="Skill name"
+            value={draft.name}
+            onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
+          />
+          <Input
+            placeholder="Icon slug (simpleicons.org)"
+            value={draft.icon_slug}
+            onChange={(e) => setDraft((p) => ({ ...p, icon_slug: e.target.value }))}
+          />
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Color hex e.g. #6366f1"
+              value={draft.color}
+              onChange={(e) => setDraft((p) => ({ ...p, color: e.target.value }))}
+            />
+            {draft.color && (
+              <div className="w-7 h-7 rounded-md shrink-0 border border-zinc-700" style={{ backgroundColor: draft.color }} />
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-zinc-400 shrink-0">Proficiency:</span>
+            {[1,2,3,4,5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setDraft((p) => ({ ...p, proficiency: n }))}
+                className={`w-6 h-6 rounded text-xs font-bold transition-colors ${draft.proficiency >= n ? "bg-indigo-600 text-white" : "bg-zinc-700 text-zinc-400"}`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
+          <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -180,20 +257,15 @@ function SortableSkillRow({ skill, onDelete }: { skill: Skill; onDelete: () => v
       <button type="button" {...attributes} {...listeners} className="cursor-grab text-zinc-600 hover:text-zinc-400">
         ⣿
       </button>
-      <div
-        className="w-3 h-3 rounded-full shrink-0"
-        style={{ backgroundColor: skill.color || "#6366f1" }}
-      />
+      <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: skill.color || "#6366f1" }} />
       <span className="flex-1 text-sm text-zinc-200">{skill.name}</span>
-      <span className="text-xs text-zinc-500">{skill.icon_slug}</span>
+      <span className="text-xs text-zinc-500 font-mono">{skill.icon_slug || "—"}</span>
       <div className="flex gap-0.5">
         {[1,2,3,4,5].map((n) => (
-          <span
-            key={n}
-            className={`w-2 h-2 rounded-sm ${n <= skill.proficiency ? "bg-indigo-500" : "bg-zinc-700"}`}
-          />
+          <span key={n} className={`w-2 h-2 rounded-sm ${n <= skill.proficiency ? "bg-indigo-500" : "bg-zinc-700"}`} />
         ))}
       </div>
+      <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit</Button>
       <Button size="sm" variant="danger" onClick={onDelete}>×</Button>
     </div>
   );
