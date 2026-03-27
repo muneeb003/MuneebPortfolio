@@ -229,7 +229,7 @@ export function SkillsSection({
       </FadeUp>
 
       {/* ── Mobile keycap buttons ── */}
-      <div className="sm:hidden grid grid-cols-4 gap-3">
+      <div className="sm:hidden flex flex-wrap justify-center gap-3">
         {allSkills.map((skill, i) => {
           const color   = resolveColor(skill.color);
           const face    = darken(color, 0.52);
@@ -248,7 +248,7 @@ export function SkillsSection({
               viewport={{ once: false }}
               transition={{ type: "tween", ease: [0.34, 1.2, 0.64, 1], duration: 0.55, delay: i * 0.02 }}
               className="relative select-none"
-              style={{ paddingBottom: 6 }}
+              style={{ paddingBottom: 6, width: "calc(25% - 9px)" }}
             >
               <div
                 className="w-full flex flex-col items-center justify-center gap-1 py-3"
