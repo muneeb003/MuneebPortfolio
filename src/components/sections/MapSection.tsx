@@ -18,7 +18,7 @@ export function MapSection({ about }: { about: About }) {
         )}
       </FadeUp>
       <FadeUp delay={0.15}>
-        <div className="w-full h-72 rounded-2xl overflow-hidden border border-zinc-800">
+        <div className="w-full h-48 sm:h-64 md:h-80 rounded-2xl overflow-hidden border border-zinc-800">
           <MapboxMap lat={about.location_lat} lng={about.location_lng} label={about.location_label ?? ""} />
         </div>
       </FadeUp>

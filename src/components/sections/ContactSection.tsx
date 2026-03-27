@@ -37,7 +37,7 @@ export function ContactSection({ about }: { about: About }) {
 
   return (
     <section id="contact" className="py-24 px-6 max-w-5xl mx-auto">
-      <div className="grid md:grid-cols-2 gap-16">
+      <div className="grid sm:grid-cols-2 gap-10 sm:gap-16">
         <SlideLeft>
         <div>
           <SplitHeading className="text-3xl font-bold text-zinc-100 mb-4">Get in touch</SplitHeading>
@@ -83,7 +83,7 @@ export function ContactSection({ about }: { about: About }) {
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input label="Name" {...register("name")} error={errors.name?.message} />
                 <Input label="Email" type="email" {...register("email")} error={errors.email?.message} />
               </div>

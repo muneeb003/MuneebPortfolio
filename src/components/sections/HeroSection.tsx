@@ -162,7 +162,7 @@ export function HeroSection({ meta, about }: HeroSectionProps) {
       <motion.div style={{ y, opacity }} className="relative z-20 text-center px-6 max-w-3xl">
         <GreetingCycler />
 
-        <h1 className="text-4xl sm:text-5xl font-bold text-zinc-100 leading-tight mb-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-zinc-100 leading-tight mb-4">
           {meta.hero_headline}
         </h1>
 
@@ -177,7 +177,7 @@ export function HeroSection({ meta, about }: HeroSectionProps) {
           {meta.hero_subheadline}
         </p>
 
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <a
             href={meta.hero_cta_url}
             className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 font-medium transition-colors"

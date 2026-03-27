@@ -139,7 +139,7 @@ function ChatWindow({ about }: { about: About }) {
   });
 
   return (
-    <div className="flex flex-col rounded-[2rem] border border-zinc-700/60 bg-zinc-900 overflow-hidden shadow-2xl h-[520px]">
+    <div className="flex flex-col rounded-[2rem] border border-zinc-700/60 bg-zinc-900 overflow-hidden shadow-2xl h-[460px] sm:h-[520px]">
       {/* Status bar */}
       <div className="flex items-center justify-between px-6 pt-4 pb-1 text-[11px] text-zinc-500 font-medium select-none">
         <span>{now}</span>
@@ -392,7 +392,7 @@ export function AboutSection({ about }: AboutSectionProps) {
         </SplitHeading>
       </FadeUp>
 
-      <div className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-start">
+      <div className="grid lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-10 items-start">
         {/* ── Chat window ── */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -418,7 +418,7 @@ export function AboutSection({ about }: AboutSectionProps) {
                 "0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.2)",
             }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="relative h-[520px] rounded-3xl overflow-hidden flex flex-col justify-between p-7"
+            className="relative h-[460px] sm:h-[520px] rounded-3xl overflow-hidden flex flex-col justify-between p-5 sm:p-7"
             style={{
               background:
                 "linear-gradient(145deg, #18181b 0%, #0f0f11 50%, #18181b 100%)",
@@ -443,7 +443,7 @@ export function AboutSection({ about }: AboutSectionProps) {
             />
 
             {/* Watermark letter */}
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[160px] font-bold text-zinc-800/30 select-none pointer-events-none leading-none">
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[80px] sm:text-[160px] font-bold text-zinc-800/30 select-none pointer-events-none leading-none">
               M
             </div>
 
