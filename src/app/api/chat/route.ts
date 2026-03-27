@@ -1,6 +1,10 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let _groq: Groq | null = null;
+function getGroq() {
+  if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return _groq;
+}
 
 // ── Local fallback (used when API key is missing / rate-limited) ──────────────
 const FALLBACK_RESPONSES: { keywords: string[]; reply: string }[] = [
@@ -119,7 +123,7 @@ export async function POST(req: Request) {
   const readable = new ReadableStream({
     async start(controller) {
       try {
-        const stream = await groq.chat.completions.create({
+        const stream = await getGroq().chat.completions.create({
           model: "llama-3.3-70b-versatile", // free, 128k context, very capable
           max_tokens: 1024,
           temperature: 0.75,
