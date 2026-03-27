@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { MoodBar } from "@/components/layout/MoodBar";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { TerminalEgg } from "@/components/easter-eggs/TerminalEgg";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const dynamic = "force-dynamic";
@@ -36,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { data: mood } = await supabase.from("mood").select("*").eq("id", 1).single();
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}>
       <body className="bg-zinc-950 text-zinc-100">
         <ScrollProgress />
         {mood?.is_visible && <MoodBar text={mood.text} linkUrl={mood.link_url} />}

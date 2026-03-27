@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
+import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { ThingsILoveTicker } from "@/components/sections/ThingsILoveTicker";
 import { SkillsSection } from "@/components/sections/SkillsSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
@@ -65,7 +66,8 @@ export default async function HomePage() {
       <Navbar />
       <main>
         <HeroSection meta={meta} about={about} />
-        <AboutSection about={about} experience={experience} />
+        <AboutSection about={about} />
+        <ExperienceSection experience={experience} />
         <ThingsILoveTicker items={thingsILove} />
         <SkillsSection categories={categories} />
         <ProjectsSection projects={projects} />
