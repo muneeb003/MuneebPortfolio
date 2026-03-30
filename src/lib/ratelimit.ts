@@ -2,7 +2,8 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 
-// Shared Redis instance (reused across requests)
+// ── Lazy singletons — created on first request, not at build time ─────────────
+
 let _redis: Redis | null = null;
 function getRedis(): Redis {
   if (!_redis) {
@@ -14,26 +15,22 @@ function getRedis(): Redis {
   return _redis;
 }
 
-// Contact form: 3 submissions per hour per IP
-export const contactLimiter = new Ratelimit({
-  redis: getRedis(),
-  limiter: Ratelimit.slidingWindow(3, "1 h"),
-  prefix: "rl:contact",
-});
+let _contact: Ratelimit | null = null;
+let _guestbook: Ratelimit | null = null;
+let _chat: Ratelimit | null = null;
 
-// Guestbook: 5 entries per hour per IP
-export const guestbookLimiter = new Ratelimit({
-  redis: getRedis(),
-  limiter: Ratelimit.slidingWindow(5, "1 h"),
-  prefix: "rl:guestbook",
-});
-
-// Chat: 30 messages per minute per IP
-export const chatLimiter = new Ratelimit({
-  redis: getRedis(),
-  limiter: Ratelimit.slidingWindow(30, "1 m"),
-  prefix: "rl:chat",
-});
+function getContactLimiter(): Ratelimit {
+  if (!_contact) _contact = new Ratelimit({ redis: getRedis(), limiter: Ratelimit.slidingWindow(3, "1 h"), prefix: "rl:contact" });
+  return _contact;
+}
+function getGuestbookLimiter(): Ratelimit {
+  if (!_guestbook) _guestbook = new Ratelimit({ redis: getRedis(), limiter: Ratelimit.slidingWindow(5, "1 h"), prefix: "rl:guestbook" });
+  return _guestbook;
+}
+function getChatLimiter(): Ratelimit {
+  if (!_chat) _chat = new Ratelimit({ redis: getRedis(), limiter: Ratelimit.slidingWindow(30, "1 m"), prefix: "rl:chat" });
+  return _chat;
+}
 
 /** Extract the real IP from an incoming request */
 export function getIP(req: Request): string {
@@ -43,10 +40,7 @@ export function getIP(req: Request): string {
 }
 
 /** Run a limiter and return a 429 response if over limit, otherwise null */
-export async function checkRateLimit(
-  limiter: Ratelimit,
-  key: string,
-): Promise<NextResponse | null> {
+async function checkLimit(limiter: Ratelimit, key: string): Promise<NextResponse | null> {
   const { success, limit, remaining, reset } = await limiter.limit(key);
   if (!success) {
     return NextResponse.json(
@@ -63,4 +57,9 @@ export async function checkRateLimit(
     );
   }
   return null;
+}
+
+export function checkRateLimit(type: "contact" | "guestbook" | "chat", key: string): Promise<NextResponse | null> {
+  const limiter = type === "contact" ? getContactLimiter() : type === "guestbook" ? getGuestbookLimiter() : getChatLimiter();
+  return checkLimit(limiter, key);
 }

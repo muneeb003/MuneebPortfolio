@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { guestbookSchema } from "@/lib/validations/guestbook.schema";
-import { guestbookLimiter, getIP, checkRateLimit } from "@/lib/ratelimit";
+import { getIP, checkRateLimit } from "@/lib/ratelimit";
 
 export async function GET() {
   const supabase = createAdminClient();
@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const limited = await checkRateLimit(guestbookLimiter, getIP(req));
+  const limited = await checkRateLimit("guestbook", getIP(req));
   if (limited) return limited;
 
   const body = await req.json();

@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import { chatLimiter, getIP, checkRateLimit } from "@/lib/ratelimit";
+import { getIP, checkRateLimit } from "@/lib/ratelimit";
 
 let _groq: Groq | null = null;
 function getGroq() {
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
     return new Response("API key not configured", { status: 500 });
   }
 
-  const limited = await checkRateLimit(chatLimiter, getIP(req));
+  const limited = await checkRateLimit("chat", getIP(req));
   if (limited) return limited;
 
   const { messages } = (await req.json()) as {
