@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { auth } from "@/lib/auth";
+import { projectSchema } from "@/lib/validations/project.schema";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,11 +18,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params;
   const body = await req.json();
-  const supabase = createAdminClient();
+  const parsed = projectSchema.partial().safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues }, { status: 400 });
+  }
 
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("projects")
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update({ ...parsed.data, updated_at: new Date().toISOString() })
     .eq("id", id)
     .select()
     .single();

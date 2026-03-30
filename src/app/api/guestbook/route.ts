@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { guestbookSchema } from "@/lib/validations/guestbook.schema";
+import { guestbookLimiter, getIP, checkRateLimit } from "@/lib/ratelimit";
 
 export async function GET() {
   const supabase = createAdminClient();
@@ -15,11 +16,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const limited = await checkRateLimit(guestbookLimiter, getIP(req));
+  if (limited) return limited;
+
   const body = await req.json();
   const parsed = guestbookSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: parsed.error.issues }, { status: 400 });
   }
 
   const avatarSeed = parsed.data.name.toLowerCase().replace(/\s+/g, "-");

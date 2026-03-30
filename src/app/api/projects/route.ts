@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { auth } from "@/lib/auth";
+import { projectSchema } from "@/lib/validations/project.schema";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -20,9 +21,13 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const supabase = createAdminClient();
+  const parsed = projectSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues }, { status: 400 });
+  }
 
-  const { data, error } = await supabase.from("projects").insert(body).select().single();
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.from("projects").insert(parsed.data).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });
 }

@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,8 +26,9 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid username or password.");
     } else {
-      router.push("/admin");
-      router.refresh();
+      // Hard navigation ensures the session cookie is picked up before
+      // the admin page renders — avoids race conditions on deployment.
+      window.location.href = "/admin";
     }
   }
 

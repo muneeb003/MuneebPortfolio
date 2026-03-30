@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { contactSchema } from "@/lib/validations/contact.schema";
+import { contactLimiter, getIP, checkRateLimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
+  const limited = await checkRateLimit(contactLimiter, getIP(req));
+  if (limited) return limited;
+
   const body = await req.json();
   const parsed = contactSchema.safeParse(body);
 

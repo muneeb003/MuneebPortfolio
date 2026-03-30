@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { Project } from "@/types";
 import { SplitHeading } from "@/components/ui/Animate";
 
@@ -176,11 +178,26 @@ function ProjectEntry({
           {project.description_short}
         </motion.p>
 
-        {/* Long description */}
+        {/* Long description — markdown rendered */}
         {project.description_long && (
-          <motion.p variants={stagger.item} className="text-sm text-zinc-500 leading-relaxed max-w-sm">
-            {project.description_long}
-          </motion.p>
+          <motion.div
+            variants={stagger.item}
+            className="text-sm text-zinc-500 leading-relaxed max-w-sm prose prose-sm prose-invert prose-zinc
+              prose-p:my-1.5 prose-p:text-zinc-500
+              prose-strong:text-zinc-300 prose-strong:font-semibold
+              prose-em:text-zinc-400
+              prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
+              prose-code:text-indigo-300 prose-code:bg-zinc-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none
+              prose-pre:bg-zinc-800/80 prose-pre:border prose-pre:border-zinc-700/50 prose-pre:rounded-xl prose-pre:text-xs
+              prose-ul:my-1.5 prose-ul:pl-4 prose-li:my-0.5 prose-li:text-zinc-500 prose-li:marker:text-indigo-500
+              prose-ol:my-1.5 prose-ol:pl-4
+              prose-h1:text-zinc-200 prose-h2:text-zinc-200 prose-h3:text-zinc-300
+              prose-blockquote:border-indigo-500 prose-blockquote:text-zinc-500 prose-blockquote:not-italic"
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {project.description_long}
+            </ReactMarkdown>
+          </motion.div>
         )}
 
         {/* Tech stack */}

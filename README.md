@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Muneeb's Portfolio
+
+A modern, high-performance personal portfolio website built with Next.js 15, TypeScript, Supabase, Tailwind CSS, and Framer Motion.
+
+---
+
+## Features
+
+### Public Site
+
+- **Hero Section** — Animated bitmoji avatar, headline, CTA buttons, Framer Motion entrance animations
+- **About Section** — AI-powered chat widget (Groq / llama-3.3-70b), bio card, watermark
+- **Experience Section** — Timeline of work history pulled from Supabase
+- **Skills Section**
+  - Desktop: interactive 3D keyboard layout with RGB glow strip and floating decorative keys
+  - Mobile: 3D keycap-style button grid, fills screen width in a 4-column layout
+  - Keys pop-animate on every scroll in random order
+- **Projects Section**
+  - Desktop: Apple-style sticky scroll — left panel shows live preview with parallax, right side scrolls through entries; `IntersectionObserver` drives active state
+  - Mobile: stacked cards with 16:9 screenshots, tech badges, and action buttons
+- **Contact Section** — Validated contact form backed by Supabase; fields collapse to single-column on mobile
+- **Interactive Map** — Mapbox GL map showing location (Islamabad)
+- **AI Chatbot** — Groq-powered streaming chat; graceful local fallback when API is unavailable
+- **Mood Bar** — Real-time mood indicator set from the admin panel
+- **Scroll Progress** — Thin top progress bar
+- **Easter Eggs** — Cursor trail, terminal Easter egg
+
+### Admin Dashboard (`/admin`)
+
+- **Login** — Credentials-based auth via NextAuth v5, bcryptjs password hashing
+- **Projects Manager** — Create, edit, delete, reorder projects with image uploads
+- **Skills Manager** — Manage skill categories and individual skills (name, icon, color, proficiency)
+- **About Editor** — Update bio, profile image, and work experience entries
+- **Contact Inbox** — View and manage contact form submissions
+- **Guestbook Manager** — Approve or reject guestbook entries
+- **Mood Editor** — Set current mood/status
+- **Settings** — Change admin password, update site metadata
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Animations | Framer Motion |
+| Database | Supabase (PostgreSQL) |
+| Auth | NextAuth v5 + bcryptjs |
+| Validation | Zod v4 |
+| AI / Chat | Groq SDK (llama-3.3-70b-versatile) |
+| Rate Limiting | Upstash Redis + @upstash/ratelimit |
+| Maps | Mapbox GL |
+| File Storage | Supabase Storage |
+
+---
+
+## Security
+
+- **HTTP Security Headers** — CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (set via `next.config.ts`)
+- **Input Validation** — All API routes validate request bodies with Zod schemas before touching the database
+- **Rate Limiting** — Upstash sliding-window limiters on all public endpoints:
+  - Contact form: 3 requests / hour / IP
+  - Guestbook: 5 requests / hour / IP
+  - Chat: 30 requests / minute / IP
+- **Authentication** — NextAuth middleware protects all `/admin/*` routes at the edge; passwords hashed with bcryptjs
+- **File Upload Hardening** — MIME type allowlist (JPEG, PNG, WebP, GIF, AVIF), 5 MB size cap, bucket allowlist, server-generated filenames (no user-controlled paths)
+- **No Raw SQL** — All database access goes through the Supabase client with parameterised queries
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                  # Public homepage
+│   ├── admin/                    # Protected dashboard pages
+│   │   └── login/page.tsx
+│   └── api/                      # API routes
+│       ├── contact/
+│       ├── guestbook/
+│       ├── projects/
+│       ├── skills/
+│       ├── chat/
+│       ├── upload/
+│       └── ...
+├── components/
+│   ├── sections/                 # Homepage sections
+│   ├── admin/                    # Admin-only components
+│   ├── layout/                   # Navbar, Footer, MoodBar
+│   └── ui/                       # Shared primitives
+├── lib/
+│   ├── auth.ts                   # NextAuth setup
+│   ├── ratelimit.ts              # Upstash rate limiters
+│   ├── supabase/                 # Supabase clients (admin, server, client)
+│   └── validations/              # Zod schemas
+└── middleware.ts                 # Edge auth guard
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+
+- A Supabase project
+- An Upstash Redis database
+- A Groq API key
+- A Mapbox token
+
+### Environment Variables
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+AUTH_SECRET=                      # generate with: openssl rand -base64 32
+
+NEXT_PUBLIC_MAPBOX_TOKEN=
+
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+GROQ_API_KEY=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+### Production Build
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project is optimised for Vercel. Push to your repo and connect it in the Vercel dashboard. Add all environment variables under **Project → Settings → Environment Variables**.
