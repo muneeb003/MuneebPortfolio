@@ -20,8 +20,8 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com",
       // fonts
       "font-src 'self' https://fonts.gstatic.com data:",
-      // images: self + Supabase storage + simpleicons CDN + data URIs + blob
-      "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://cdn.simpleicons.org https://api.mapbox.com https://events.mapbox.com",
+      // images: self + Supabase storage + simpleicons CDN + postimg (map marker) + data URIs + blob
+      "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://cdn.simpleicons.org https://api.mapbox.com https://events.mapbox.com https://i.postimg.cc",
       // connections: self + Supabase + Groq + Upstash + Mapbox
       "connect-src 'self' https://*.supabase.co https://*.supabase.in https://api.groq.com https://*.upstash.io https://api.mapbox.com https://events.mapbox.com wss://*.supabase.co",
       // workers for Mapbox GL

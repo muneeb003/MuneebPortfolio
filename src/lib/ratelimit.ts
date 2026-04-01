@@ -4,6 +4,12 @@ import { NextResponse } from "next/server";
 
 // ── Lazy singletons — created on first request, not at build time ─────────────
 
+function isConfigured(): boolean {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  return !!url && !!token && url.startsWith("https://");
+}
+
 let _redis: Redis | null = null;
 function getRedis(): Redis {
   if (!_redis) {
@@ -39,27 +45,39 @@ export function getIP(req: Request): string {
   return "127.0.0.1";
 }
 
-/** Run a limiter and return a 429 response if over limit, otherwise null */
-async function checkLimit(limiter: Ratelimit, key: string): Promise<NextResponse | null> {
-  const { success, limit, remaining, reset } = await limiter.limit(key);
-  if (!success) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
-      {
-        status: 429,
-        headers: {
-          "X-RateLimit-Limit": String(limit),
-          "X-RateLimit-Remaining": String(remaining),
-          "X-RateLimit-Reset": String(reset),
-          "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
-        },
-      },
-    );
-  }
-  return null;
-}
+/** Run a limiter and return a 429 response if over limit, otherwise null.
+ *  Returns null (allow) if Upstash is not configured. */
+export async function checkRateLimit(
+  type: "contact" | "guestbook" | "chat",
+  key: string,
+): Promise<NextResponse | null> {
+  if (!isConfigured()) return null;
 
-export function checkRateLimit(type: "contact" | "guestbook" | "chat", key: string): Promise<NextResponse | null> {
-  const limiter = type === "contact" ? getContactLimiter() : type === "guestbook" ? getGuestbookLimiter() : getChatLimiter();
-  return checkLimit(limiter, key);
+  try {
+    const limiter =
+      type === "contact" ? getContactLimiter() :
+      type === "guestbook" ? getGuestbookLimiter() :
+      getChatLimiter();
+
+    const { success, limit, remaining, reset } = await limiter.limit(key);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": String(limit),
+            "X-RateLimit-Remaining": String(remaining),
+            "X-RateLimit-Reset": String(reset),
+            "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+          },
+        },
+      );
+    }
+    return null;
+  } catch (err) {
+    // Don't block the request if Redis is unreachable
+    console.error("[ratelimit] Redis error, skipping:", (err as Error).message);
+    return null;
+  }
 }
