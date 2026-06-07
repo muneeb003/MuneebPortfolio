@@ -54,7 +54,7 @@ function PreviewPanel({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="relative w-full rounded-2xl bg-zinc-900 border border-zinc-800/60"
+          className="relative w-full bg-zinc-900 border border-zinc-800/60"
           style={{ aspectRatio: "16/9", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}
         >
           {project.cover_image_url ? (
@@ -137,7 +137,7 @@ function ProjectEntry({
       className="min-h-[60vh] sm:min-h-[88vh] flex items-center py-12 sm:py-20 border-b border-zinc-800/40 last:border-0"
     >
       {/* Mobile image */}
-      <div className="lg:hidden relative w-full overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/60 mb-8"
+      <div className="lg:hidden relative w-full overflow-hidden bg-zinc-900 border border-zinc-800/60 mb-8"
         style={{ aspectRatio: "16/9", boxShadow: "0 8px 30px rgba(0,0,0,0.4)" }}>
         {project.cover_image_url ? (
           <Image src={project.cover_image_url} alt={project.title} fill sizes="100vw" className="object-cover object-center" />
@@ -277,7 +277,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: "-40px" }}
             transition={{ duration: 0.45, delay: i * 0.05, ease: EASE }}
-            className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900"
+            className="overflow-hidden border border-zinc-800 bg-zinc-900"
           >
             {/* Image */}
             <div className="relative w-full bg-zinc-800" style={{ aspectRatio: "16/9" }}>
