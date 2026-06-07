@@ -54,25 +54,31 @@ function PreviewPanel({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.4, ease: EASE }}
-          className="relative w-full bg-black border border-zinc-800/60"
-          style={{ aspectRatio: "16/9", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}
         >
-          {project.cover_image_url ? (
-            <motion.div className="absolute inset-0" style={{ y: imageY }}>
+          <motion.div
+            animate={{ y: [0, -12, 0] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            className="relative w-full overflow-hidden"
+            style={{
+              aspectRatio: "16/9",
+              boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 10px 30px rgba(0,0,0,0.4)",
+            }}
+          >
+            {project.cover_image_url ? (
               <Image
                 src={project.cover_image_url}
                 alt={project.title}
                 fill
                 sizes="(max-width: 1024px) 0px, 50vw"
-                className="object-contain"
+                className="object-cover object-center"
                 priority
               />
-            </motion.div>
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-zinc-900 to-zinc-950 flex items-center justify-center">
-              <span className="text-zinc-700 text-sm font-mono">no preview</span>
-            </div>
-          )}
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-zinc-900 to-zinc-950 flex items-center justify-center">
+                <span className="text-zinc-700 text-sm font-mono">no preview</span>
+              </div>
+            )}
+          </motion.div>
         </motion.div>
       </AnimatePresence>
 
@@ -137,8 +143,8 @@ function ProjectEntry({
       className="min-h-[60vh] sm:min-h-[88vh] flex items-center py-12 sm:py-20 border-b border-zinc-800/40 last:border-0"
     >
       {/* Mobile image */}
-      <div className="lg:hidden relative w-full overflow-hidden bg-black border border-zinc-800/60 mb-8"
-        style={{ aspectRatio: "16/9", boxShadow: "0 8px 30px rgba(0,0,0,0.4)" }}>
+      <div className="lg:hidden relative w-full overflow-hidden mb-8"
+        style={{ aspectRatio: "16/9", boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
         {project.cover_image_url ? (
           <Image src={project.cover_image_url} alt={project.title} fill sizes="100vw" className="object-cover object-center" />
         ) : (
@@ -277,10 +283,11 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: "-40px" }}
             transition={{ duration: 0.45, delay: i * 0.05, ease: EASE }}
-            className="overflow-hidden border border-zinc-800 bg-black"
+            className="overflow-hidden"
+            style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}
           >
             {/* Image */}
-            <div className="relative w-full bg-black" style={{ aspectRatio: "16/9" }}>
+            <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
               {project.cover_image_url ? (
                 <Image src={project.cover_image_url} alt={project.title} fill sizes="100vw" className="object-contain" />
               ) : (
